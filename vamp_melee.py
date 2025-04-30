@@ -13,7 +13,7 @@ model.x = Expression(model.I, rule=x_rule)
 
 #Objective function
 def obj_expression(model):
-    return 1.03125 * (3 * (model.x[3] + 50) / 32 + 3 * model.x[6] / 80)
+    return 1.53125 * ((model.x[1]) / 32 + 3 * model.x[6] / 80)
 
 model.obj = Objective(rule=obj_expression, sense=maximize)
 
