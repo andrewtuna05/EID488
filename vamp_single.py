@@ -10,7 +10,7 @@ Vampire: Choose an Attack type:
 """
 choice = int(sys.argv[1])
 if choice not in [1, 2, 3, 4]:
-    raise ValueError("Usage: python3 vampire_single.py [1-4]")
+    raise ValueError("Command: python3 vampire_single.py [1-4]")
 
 model = ConcreteModel()
 model.I = RangeSet(1, 6)
@@ -41,4 +41,4 @@ SolverFactory('glpk').solve(model)
 
 for i in model.I:
     print(f"x[{i}] = {model.x[i]():.0f}")
-print(f"Objective value (Damage) = {model.obj():.5f}")
+print(f"Objective valuen = {model.obj():.5f}")

@@ -1,4 +1,5 @@
 from pyomo.environ import *
+import time
 
 # Define the stat weight vectors: [STR, DEX, INT, END, CHA, LUK]
 damage_map = {
@@ -37,12 +38,15 @@ for race in damage_map:
         model.obj = Objective(expr=sum(w[i-1] * model.x[i] for i in model.I), sense=maximize)
         model.total = Constraint(expr=sum(model.x[i] for i in model.I) <= 750)
 
+        start = time.time()
         SolverFactory('glpk').solve(model, tee=False)
+        end = time.time()
+        elapsed = end - start
 
         x_vals = [int(model.x[i]()) for i in model.I]
         damage = model.obj()
 
-        print(f"{race:<10} {atype:<6} " + " ".join(f"{x:<6}" for x in x_vals) + f"{damage:.4f}")
+        print(f"{race:<10} {atype:<6} " + " ".join(f"{x:<6}" for x in x_vals) + f"{damage:.4f}  Time: {elapsed:.3f}s")
 print()
 print("LP Relaxation Solutions")
 print(f"{'Subrace':<10} {'Type':<6} " + " ".join(f"{s:<6}" for s in stat_labels) + "Damage")
@@ -57,8 +61,12 @@ for race in damage_map:
         relaxed_model.x = Expression(relaxed_model.I, rule=lambda m, i: 5 * m.y[i])
         relaxed_model.obj = Objective(expr=sum(w[i-1] * relaxed_model.x[i] for i in relaxed_model.I), sense=maximize)
         relaxed_model.total = Constraint(expr=sum(relaxed_model.x[i] for i in relaxed_model.I) <= 750)
+       
+        start = time.time()
         SolverFactory('glpk').solve(relaxed_model)
+        end = time.time()
+        elapsed = end - start
 
         x_vals = [relaxed_model.x[i]() for i in relaxed_model.I]
         damage = relaxed_model.obj()
-        print(f"{race:<10} {atype:<6} " + " ".join(f"{x:<6.2f}" for x in x_vals) + f" {damage:.4f}")
+        print(f"{race:<10} {atype:<6} " + " ".join(f"{x:<6.2f}" for x in x_vals) + f"{damage:.4f}  Time: {elapsed:.3f}s")
